@@ -18,7 +18,9 @@ body {
     overflow: hidden;
 }
 
-/* PAGINA ORARIO */
+/* =========================================
+   PAGINA ORARIO
+   ========================================= */
 
 #clockPage {
     position: fixed;
@@ -30,16 +32,19 @@ body {
     background: #000;
 }
 
-/* PAGINA RAI */
 
-#raiPage {
+/* =========================================
+   VIDEO RAI NEWS 24
+   ========================================= */
+
+#video {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
-    border: 0;
-    z-index: 1;
+    object-fit: contain;
     background: #000;
+    z-index: 1;
 }
 
 </style>
@@ -47,12 +52,9 @@ body {
 
 <body>
 
-<!--
-========================================================
-PAGINA ORARIO VIRGIN ACTIVE
-Rimane visibile durante il caricamento
-========================================================
--->
+<!-- =========================================
+     ORARIO VIRGIN ACTIVE
+     ========================================= -->
 
 <iframe
     id="clockPage"
@@ -62,20 +64,24 @@ Rimane visibile durante il caricamento
 </iframe>
 
 
-<!--
-========================================================
-RAI NEWS 24
-========================================================
--->
+<!-- =========================================
+     VIDEO RAI NEWS 24
+     ========================================= -->
 
-<iframe
-    id="raiPage"
-    src="https://www.raiplay.it/dirette/rainews24"
-    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
-    allowfullscreen
-    frameborder="0"
-    scrolling="no">
-</iframe>
+<video
+    id="video"
+    autoplay
+    muted
+    playsinline
+    controls="false">
+</video>
+
+
+<!-- =========================================
+     HLS.JS
+     ========================================= -->
+
+<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
 
 
 <script>
@@ -85,20 +91,128 @@ RAI NEWS 24
 VIRGIN ACTIVE - RAI NEWS 24
 ========================================================
 
-1. Carica subito la pagina Rai in background.
-2. Mantiene l'orario Virgin Active davanti.
-3. Dopo 15 secondi nasconde l'orario.
-4. Rimane Rai News 24 a tutto schermo.
+ORARIO
+   ↓
+15 SECONDI DI CARICAMENTO
+   ↓
+RAI NEWS 24 LIVE
+
+Il video viene caricato immediatamente
+in background mentre rimane visibile l'orario.
 ========================================================
 */
 
 
 /*
 --------------------------------------------------------
-TEMPO DI CARICAMENTO
+STREAM RAI NEWS 24
+--------------------------------------------------------
+*/
+
+const STREAM_URL =
+    "https://rainews1-live.akamaized.net/hls/live/598326/rainews1/rainews1/playlist.m3u8";
+
+
+const video = document.getElementById("video");
+
+
+/*
+--------------------------------------------------------
+AVVIO HLS
+--------------------------------------------------------
+*/
+
+function startStream() {
+
+    if (Hls.isSupported()) {
+
+        const hls = new Hls({
+            enableWorker: true,
+            lowLatencyMode: true,
+            autoStartLoad: true
+        });
+
+        hls.loadSource(STREAM_URL);
+
+        hls.attachMedia(video);
+
+        hls.on(Hls.Events.MANIFEST_PARSED, function () {
+
+            video.play().catch(function () {
+
+                console.log("Autoplay bloccato dal browser.");
+
+            });
+
+        });
+
+
+        /*
+        -----------------------------------------------
+        ERRORI HLS
+        -----------------------------------------------
+        */
+
+        hls.on(Hls.Events.ERROR, function (event, data) {
+
+            console.log("Errore HLS:", data);
+
+            if (data.fatal) {
+
+                setTimeout(function () {
+
+                    location.reload();
+
+                }, 10000);
+
+            }
+
+        });
+
+    }
+
+    /*
+    -----------------------------------------------
+    Safari / browser con HLS nativo
+    -----------------------------------------------
+    */
+
+    else if (video.canPlayType("application/vnd.apple.mpegurl")) {
+
+        video.src = STREAM_URL;
+
+        video.addEventListener("loadedmetadata", function () {
+
+            video.play().catch(function () {
+
+                console.log("Autoplay bloccato.");
+
+            });
+
+        });
+
+    }
+
+}
+
+
+/*
+--------------------------------------------------------
+AVVIA SUBITO LO STREAM
+--------------------------------------------------------
+*/
+
+startStream();
+
+
+/*
+--------------------------------------------------------
+ORARIO VIRGIN ACTIVE
 --------------------------------------------------------
 
-15 secondi
+Rimane davanti per 15 secondi.
+Durante questi 15 secondi Rai News
+si carica dietro.
 --------------------------------------------------------
 */
 
@@ -111,10 +225,10 @@ setTimeout(function () {
 
 /*
 --------------------------------------------------------
-RICARICA AUTOMATICA
+REFRESH AUTOMATICO
 --------------------------------------------------------
 
-Ogni 6 ore per mantenere fresca la sessione.
+Ogni 6 ore.
 --------------------------------------------------------
 */
 
@@ -127,11 +241,7 @@ setTimeout(function () {
 
 /*
 --------------------------------------------------------
-GESTIONE ERRORI
---------------------------------------------------------
-
-Se la pagina principale genera un errore,
-prova a ricaricare.
+SE LA PAGINA GENERA UN ERRORE
 --------------------------------------------------------
 */
 
