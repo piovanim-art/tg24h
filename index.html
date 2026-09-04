@@ -1,1 +1,136 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
+<title>Sky TG24 Live - Virgin Active</title>
+
+<style>
+html,
+body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    overflow: hidden;
+}
+
+iframe {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    background: #000;
+}
+
+#clockPage {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    z-index: 10;
+    background: #000;
+}
+
+#skyPage {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
+    z-index: 1;
+    background: #000;
+    opacity: 0;
+    transition: opacity 0.8s ease;
+}
+
+#skyPage.visible {
+    opacity: 1;
+}
+</style>
+</head>
+
+<body>
+
+<!-- PAGINA ORARIO -->
+<iframe
+    id="clockPage"
+    src="https://piovanim-art.github.io/oraribrescia/"
+    scrolling="no">
+</iframe>
+
+<!-- SKY TG24 -->
+<iframe
+    id="skyPage"
+    src="https://tg24.sky.it/diretta"
+    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+    allowfullscreen
+    frameborder="0"
+    scrolling="no">
+</iframe>
+
+<script>
+
+/*
+========================================================
+VIRGIN ACTIVE
+ORARIO → SKY TG24 LIVE
+========================================================
+*/
+
+/*
+L'orario rimane visibile per 15 secondi.
+Poi viene nascosto con una dissolvenza.
+*/
+
+setTimeout(function () {
+
+    const clock = document.getElementById("clockPage");
+    const sky = document.getElementById("skyPage");
+
+    sky.classList.add("visible");
+
+    setTimeout(function () {
+        clock.style.display = "none";
+    }, 800);
+
+}, 15000);
+
+
+/*
+--------------------------------------------------------
+RICARICA AUTOMATICA OGNI 6 ORE
+--------------------------------------------------------
+*/
+
+setTimeout(function () {
+
+    location.reload();
+
+}, 6 * 60 * 60 * 1000);
+
+
+/*
+--------------------------------------------------------
+SE LA PAGINA VA IN ERRORE, RICARICA DOPO 10 SECONDI
+--------------------------------------------------------
+*/
+
+window.addEventListener("error", function () {
+
+    setTimeout(function () {
+        location.reload();
+    }, 10000);
+
+});
+
+</script>
+
+</body>
+</html>
