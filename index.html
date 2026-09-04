@@ -7,6 +7,7 @@
 <title>Sky TG24 Live - Virgin Active</title>
 
 <style>
+
 html,
 body {
     margin: 0;
@@ -17,16 +18,7 @@ body {
     overflow: hidden;
 }
 
-iframe {
-    position: fixed;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    border: 0;
-    margin: 0;
-    padding: 0;
-    background: #000;
-}
+/* PAGINA ORARIO */
 
 #clockPage {
     position: fixed;
@@ -34,9 +26,11 @@ iframe {
     width: 100%;
     height: 100%;
     border: 0;
-    z-index: 10;
+    z-index: 20;
     background: #000;
 }
+
+/* SKY TG24 */
 
 #skyPage {
     position: fixed;
@@ -44,36 +38,52 @@ iframe {
     width: 100%;
     height: 100%;
     border: 0;
-    z-index: 1;
+    z-index: 10;
     background: #000;
+
     opacity: 0;
+
     transition: opacity 0.8s ease;
 }
 
 #skyPage.visible {
     opacity: 1;
 }
+
 </style>
 </head>
 
 <body>
 
-<!-- PAGINA ORARIO -->
+<!--
+========================================================
+VIRGIN ACTIVE CLOCK
+Rimane visibile durante il caricamento di Sky TG24
+========================================================
+-->
+
 <iframe
     id="clockPage"
     src="https://piovanim-art.github.io/oraribrescia/"
     scrolling="no">
 </iframe>
 
-<!-- SKY TG24 -->
+
+<!--
+========================================================
+SKY TG24 LIVE
+========================================================
+-->
+
 <iframe
     id="skyPage"
-    src="https://tg24.sky.it/diretta"
+    src="https://video.sky.it/diretta/tg24-live"
     allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
     allowfullscreen
     frameborder="0"
     scrolling="no">
 </iframe>
+
 
 <script>
 
@@ -84,9 +94,12 @@ ORARIO → SKY TG24 LIVE
 ========================================================
 */
 
+
 /*
-L'orario rimane visibile per 15 secondi.
-Poi viene nascosto con una dissolvenza.
+--------------------------------------------------------
+DOPO 15 SECONDI
+mostra Sky TG24
+--------------------------------------------------------
 */
 
 setTimeout(function () {
@@ -94,10 +107,21 @@ setTimeout(function () {
     const clock = document.getElementById("clockPage");
     const sky = document.getElementById("skyPage");
 
+    /*
+    Prima facciamo comparire Sky
+    */
+
     sky.classList.add("visible");
 
+
+    /*
+    Poi togliamo completamente l'orologio
+    */
+
     setTimeout(function () {
+
         clock.style.display = "none";
+
     }, 800);
 
 }, 15000);
@@ -118,14 +142,17 @@ setTimeout(function () {
 
 /*
 --------------------------------------------------------
-SE LA PAGINA VA IN ERRORE, RICARICA DOPO 10 SECONDI
+SE LA PAGINA GENERA UN ERRORE
+ricarica dopo 10 secondi
 --------------------------------------------------------
 */
 
 window.addEventListener("error", function () {
 
     setTimeout(function () {
+
         location.reload();
+
     }, 10000);
 
 });
