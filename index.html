@@ -18,9 +18,9 @@ body {
     overflow: hidden;
 }
 
-/* =========================================
-   PAGINA ORARIO
-   ========================================= */
+/* =====================================================
+   PAGINA ORARIO VIRGIN ACTIVE
+   ===================================================== */
 
 #clockPage {
     position: fixed;
@@ -28,33 +28,42 @@ body {
     width: 100%;
     height: 100%;
     border: 0;
-    z-index: 10;
+    margin: 0;
+    padding: 0;
     background: #000;
+    z-index: 20;
 }
 
 
-/* =========================================
-   VIDEO RAI NEWS 24
-   ========================================= */
+/* =====================================================
+   RAI NEWS 24
+   ===================================================== */
 
-#video {
+#raiPage {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
-    object-fit: contain;
+    border: 0;
+    margin: 0;
+    padding: 0;
     background: #000;
-    z-index: 1;
+    z-index: 10;
 }
 
 </style>
 </head>
 
+
 <body>
 
-<!-- =========================================
+
+<!-- ===================================================
      ORARIO VIRGIN ACTIVE
-     ========================================= -->
+     
+     Rimane davanti durante il caricamento
+     di Rai News 24.
+     =================================================== -->
 
 <iframe
     id="clockPage"
@@ -64,173 +73,68 @@ body {
 </iframe>
 
 
-<!-- =========================================
-     VIDEO RAI NEWS 24
-     ========================================= -->
+<!-- ===================================================
+     RAI NEWS 24 LIVE
+     
+     La pagina viene caricata immediatamente
+     sotto l'orario.
+     =================================================== -->
 
-<video
-    id="video"
-    autoplay
-    muted
-    playsinline
-    controls="false">
-</video>
-
-
-<!-- =========================================
-     HLS.JS
-     ========================================= -->
-
-<script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+<iframe
+    id="raiPage"
+    src="https://www.rainews.it/dirette/diretta-rainews24"
+    allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
+    allowfullscreen
+    frameborder="0"
+    scrolling="no">
+</iframe>
 
 
 <script>
 
 /*
 ========================================================
-VIRGIN ACTIVE - RAI NEWS 24
-========================================================
-
-ORARIO
-   ↓
-15 SECONDI DI CARICAMENTO
-   ↓
+VIRGIN ACTIVE
 RAI NEWS 24 LIVE
+========================================================
 
-Il video viene caricato immediatamente
-in background mentre rimane visibile l'orario.
+FUNZIONAMENTO:
+
+1. Parte subito l'orario Virgin Active.
+2. Rai News 24 viene caricata contemporaneamente
+   in background.
+3. L'orario rimane visibile per 15 secondi.
+4. Dopo 15 secondi l'orario viene nascosto.
+5. Rimane visibile Rai News 24.
 ========================================================
 */
 
 
-/*
---------------------------------------------------------
-STREAM RAI NEWS 24
---------------------------------------------------------
-*/
+/* =====================================================
+   TIMER ORARIO
+   =====================================================
 
-const STREAM_URL =
-    "https://rainews1-live.akamaized.net/hls/live/598326/rainews1/rainews1/playlist.m3u8";
-
-
-const video = document.getElementById("video");
-
-
-/*
---------------------------------------------------------
-AVVIO HLS
---------------------------------------------------------
-*/
-
-function startStream() {
-
-    if (Hls.isSupported()) {
-
-        const hls = new Hls({
-            enableWorker: true,
-            lowLatencyMode: true,
-            autoStartLoad: true
-        });
-
-        hls.loadSource(STREAM_URL);
-
-        hls.attachMedia(video);
-
-        hls.on(Hls.Events.MANIFEST_PARSED, function () {
-
-            video.play().catch(function () {
-
-                console.log("Autoplay bloccato dal browser.");
-
-            });
-
-        });
-
-
-        /*
-        -----------------------------------------------
-        ERRORI HLS
-        -----------------------------------------------
-        */
-
-        hls.on(Hls.Events.ERROR, function (event, data) {
-
-            console.log("Errore HLS:", data);
-
-            if (data.fatal) {
-
-                setTimeout(function () {
-
-                    location.reload();
-
-                }, 10000);
-
-            }
-
-        });
-
-    }
-
-    /*
-    -----------------------------------------------
-    Safari / browser con HLS nativo
-    -----------------------------------------------
-    */
-
-    else if (video.canPlayType("application/vnd.apple.mpegurl")) {
-
-        video.src = STREAM_URL;
-
-        video.addEventListener("loadedmetadata", function () {
-
-            video.play().catch(function () {
-
-                console.log("Autoplay bloccato.");
-
-            });
-
-        });
-
-    }
-
-}
-
-
-/*
---------------------------------------------------------
-AVVIA SUBITO LO STREAM
---------------------------------------------------------
-*/
-
-startStream();
-
-
-/*
---------------------------------------------------------
-ORARIO VIRGIN ACTIVE
---------------------------------------------------------
-
-Rimane davanti per 15 secondi.
-Durante questi 15 secondi Rai News
-si carica dietro.
---------------------------------------------------------
-*/
+   15 secondi
+   ===================================================== */
 
 setTimeout(function () {
 
-    document.getElementById("clockPage").style.display = "none";
+    const clock = document.getElementById("clockPage");
+
+    if (clock) {
+        clock.style.display = "none";
+    }
 
 }, 15000);
 
 
-/*
---------------------------------------------------------
-REFRESH AUTOMATICO
---------------------------------------------------------
+/* =====================================================
+   REFRESH AUTOMATICO
+   =====================================================
 
-Ogni 6 ore.
---------------------------------------------------------
-*/
+   Ogni 6 ore.
+   Serve per mantenere fresca la sessione.
+   ===================================================== */
 
 setTimeout(function () {
 
@@ -239,11 +143,13 @@ setTimeout(function () {
 }, 6 * 60 * 60 * 1000);
 
 
-/*
---------------------------------------------------------
-SE LA PAGINA GENERA UN ERRORE
---------------------------------------------------------
-*/
+/* =====================================================
+   GESTIONE ERRORI
+   =====================================================
+
+   Se la pagina principale genera un errore,
+   prova a ricaricare dopo 10 secondi.
+   ===================================================== */
 
 window.addEventListener("error", function () {
 
@@ -256,6 +162,7 @@ window.addEventListener("error", function () {
 });
 
 </script>
+
 
 </body>
 </html>
