@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<title>Sky TG24 Live - Virgin Active</title>
+<title>Rai News 24 Live - Virgin Active</title>
 
 <style>
 
@@ -26,28 +26,20 @@ body {
     width: 100%;
     height: 100%;
     border: 0;
-    z-index: 20;
+    z-index: 10;
     background: #000;
 }
 
-/* SKY TG24 */
+/* PAGINA RAI */
 
-#skyPage {
+#raiPage {
     position: fixed;
     inset: 0;
     width: 100%;
     height: 100%;
     border: 0;
-    z-index: 10;
+    z-index: 1;
     background: #000;
-
-    opacity: 0;
-
-    transition: opacity 0.8s ease;
-}
-
-#skyPage.visible {
-    opacity: 1;
 }
 
 </style>
@@ -57,27 +49,28 @@ body {
 
 <!--
 ========================================================
-VIRGIN ACTIVE CLOCK
-Rimane visibile durante il caricamento di Sky TG24
+PAGINA ORARIO VIRGIN ACTIVE
+Rimane visibile durante il caricamento
 ========================================================
 -->
 
 <iframe
     id="clockPage"
     src="https://piovanim-art.github.io/oraribrescia/"
+    frameborder="0"
     scrolling="no">
 </iframe>
 
 
 <!--
 ========================================================
-SKY TG24 LIVE
+RAI NEWS 24
 ========================================================
 -->
 
 <iframe
-    id="skyPage"
-    src="https://video.sky.it/diretta/tg24-live"
+    id="raiPage"
+    src="https://www.raiplay.it/dirette/rainews24"
     allow="autoplay; fullscreen; encrypted-media; picture-in-picture"
     allowfullscreen
     frameborder="0"
@@ -89,47 +82,39 @@ SKY TG24 LIVE
 
 /*
 ========================================================
-VIRGIN ACTIVE
-ORARIO → SKY TG24 LIVE
+VIRGIN ACTIVE - RAI NEWS 24
+========================================================
+
+1. Carica subito la pagina Rai in background.
+2. Mantiene l'orario Virgin Active davanti.
+3. Dopo 15 secondi nasconde l'orario.
+4. Rimane Rai News 24 a tutto schermo.
 ========================================================
 */
 
 
 /*
 --------------------------------------------------------
-DOPO 15 SECONDI
-mostra Sky TG24
+TEMPO DI CARICAMENTO
+--------------------------------------------------------
+
+15 secondi
 --------------------------------------------------------
 */
 
 setTimeout(function () {
 
-    const clock = document.getElementById("clockPage");
-    const sky = document.getElementById("skyPage");
-
-    /*
-    Prima facciamo comparire Sky
-    */
-
-    sky.classList.add("visible");
-
-
-    /*
-    Poi togliamo completamente l'orologio
-    */
-
-    setTimeout(function () {
-
-        clock.style.display = "none";
-
-    }, 800);
+    document.getElementById("clockPage").style.display = "none";
 
 }, 15000);
 
 
 /*
 --------------------------------------------------------
-RICARICA AUTOMATICA OGNI 6 ORE
+RICARICA AUTOMATICA
+--------------------------------------------------------
+
+Ogni 6 ore per mantenere fresca la sessione.
 --------------------------------------------------------
 */
 
@@ -142,8 +127,11 @@ setTimeout(function () {
 
 /*
 --------------------------------------------------------
-SE LA PAGINA GENERA UN ERRORE
-ricarica dopo 10 secondi
+GESTIONE ERRORI
+--------------------------------------------------------
+
+Se la pagina principale genera un errore,
+prova a ricaricare.
 --------------------------------------------------------
 */
 
